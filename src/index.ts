@@ -41,8 +41,8 @@ export default {
       body: JSON.stringify({
         embeds: [
           {
-            title: requestJSON.message,
-            description: requestJSON.ruleName,
+            title: requestJSON.ruleName,
+            description: requestJSON.message,
             fields: [
               {
                 name: "url",
