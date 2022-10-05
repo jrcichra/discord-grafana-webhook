@@ -1,0 +1,5 @@
+name = "discord-grafana-webhook"
+main = "src/index.ts"
+compatibility_date = "2022-10-05"
+
+[vars]
