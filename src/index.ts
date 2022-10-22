@@ -1,7 +1,9 @@
 export interface Env {
   USERNAME: string;
+  USERNAME_DEV: string;
   PASSWORD: string;
   WEBHOOK_URL: string;
+  WEBHOOK_URL_DEV: string;
 }
 
 const BASIC = "Basic ";
@@ -27,21 +29,36 @@ export default {
     const username = auth.split(":")[0];
     const password = auth.split(":")[1];
     // Block if they're not allowed
-    if (username !== env.USERNAME || password !== env.PASSWORD) {
+
+    let webhook = "";
+    if (username === env.USERNAME_DEV) {
+      webhook = env.WEBHOOK_URL_DEV;
+    } else if (username === env.USERNAME) {
+      webhook = env.WEBHOOK_URL;
+    }
+
+    if (
+      !(
+        (username === env.USERNAME || username === env.USERNAME_DEV) &&
+        password === env.PASSWORD
+      )
+    ) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 403,
         headers: { "content-type": "application/json" },
       });
     }
+
     // post to Discord at the provided webhook url
     const requestJSON: any = await request.json();
-    const discordResponse = await fetch(env.WEBHOOK_URL, {
+    console.log(requestJSON);
+    const discordResponse = await fetch(webhook, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         embeds: [
           {
-            title: requestJSON.ruleName,
+            title: requestJSON.title ?? requestJSON.ruleName,
             description: requestJSON.message,
             fields: [
               {
